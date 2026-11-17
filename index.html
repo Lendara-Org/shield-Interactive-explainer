@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lendara Shield: pagar en privado sin esconderse</title>
+<meta name="description" content="Cómo funciona Lendara Shield, en dos minutos: pagos privados en Stellar que un auditor autorizado puede revisar. En español, inglés y portugués.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="Lendara Shield: pagar en privado sin esconderse">
+<meta property="og:description" content="Pagos privados en Stellar que un auditor autorizado puede revisar. ES · EN · PT.">
+<meta property="og:image" content="https://lendara-org.github.io/shield-Interactive-explainer/docs/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#20344D;--mut:#51647A;--line:#D9E2EC;--sub:#F5F8FC;--wh:#fff;--cr:#E22366;--wine:#C21852;--or:#FF8A3D;--co:#FF6255;--ap:#FFB36B;--pe:#FFE9D9;--soft:#FBE3ED;--ok:#75B52E;--okd:#2C4A12;--oks:#BBF87E;--info:#279EC5;--code:#EAF0F8;--err:#D94B3D}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--wh);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--wine)}
+h1,h2,h3{font-family:Sora,Inter,sans-serif;font-weight:600;letter-spacing:-.035em}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--cr),var(--or));z-index:60}
+.isotipo{fill:currentColor}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;gap:4vw;align-items:center;padding:8vh 6vw;position:relative;overflow:hidden}
+.brand{display:inline-flex;align-items:center;gap:10px;font-family:Sora,Inter,system-ui,sans-serif;font-weight:600;font-size:20px;color:var(--ink)}
+.brand svg{height:26px;width:auto;color:var(--cr)}
+.brand span{color:var(--mut);font-weight:600}
+.kicker{font:500 12px/1 'Geist Mono',ui-monospace,monospace,monospace;letter-spacing:.16em;color:var(--cr);text-transform:uppercase;margin-top:44px}
+.hero h1{font-size:clamp(42px,5.6vw,80px);line-height:1;margin:.3em 0 .35em;letter-spacing:-.045em}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--cr),var(--or));-webkit-background-clip:text;background-clip:text;color:transparent}
+.dek{font-size:clamp(18px,1.6vw,21px);line-height:1.55;color:var(--mut);max-width:560px;margin:0}
+.tagline{margin-top:28px;display:flex;gap:8px;flex-wrap:wrap}
+.tagline b{font:500 13px 'Geist Mono',ui-monospace,monospace,monospace;background:var(--sub);border:1px solid var(--line);border-radius:999px;padding:7px 13px;color:var(--ink)}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.cta a{text-decoration:none;font:600 15px Inter,system-ui,sans-serif;border-radius:10px;padding:12px 18px;border:1px solid var(--line);color:var(--ink);background:#fff}
+.cta a.pri{background:var(--wine);border-color:var(--wine);color:#fff}
+.langs{position:absolute;top:26px;right:6vw;z-index:5;display:flex;gap:2px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px;box-shadow:0 4px 14px #20344D10}
+.langs button{border:0;background:transparent;font:500 12.5px 'Geist Mono',ui-monospace,monospace;color:var(--mut);padding:6px 10px;border-radius:7px;cursor:pointer;letter-spacing:.06em}
+.langs button[aria-pressed=true]{background:var(--ink);color:#fff}
+@media (max-width:980px){.langs{top:16px;right:16px}}
+.mesh{position:relative;border-radius:32px;min-height:600px;display:flex;align-items:center;justify-content:center;padding:40px;overflow:hidden;isolation:isolate;background:var(--soft)}
+.mesh::before,.mesh::after{content:"";position:absolute;inset:-30%;z-index:-1;background:radial-gradient(circle at 30% 30%,var(--pe),transparent 45%),radial-gradient(circle at 75% 25%,var(--ap),transparent 40%),radial-gradient(circle at 70% 80%,var(--cr),transparent 45%),radial-gradient(circle at 20% 85%,var(--co),transparent 40%);animation:drift 14s ease-in-out infinite alternate;filter:blur(20px)}
+.mesh::after{animation-duration:19s;animation-direction:alternate-reverse;opacity:.55;mix-blend-mode:soft-light}
+@keyframes drift{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(6%,-4%) rotate(25deg)}}
+.pay{width:100%;max-width:440px;background:#fff;border:1px solid #FFFFFFB3;border-radius:24px;padding:26px;box-shadow:0 24px 64px #20344D24}
+.pay .top{display:flex;justify-content:space-between;align-items:center}
+.pay .top small{font:500 11px 'Geist Mono',ui-monospace,monospace;color:var(--mut);letter-spacing:.1em;text-transform:uppercase}
+.pay h4{font-family:Sora,Inter,system-ui,sans-serif;font-size:22px;margin:22px 0 0;letter-spacing:-.025em}
+.seg{display:flex;padding:4px;gap:4px;border-radius:10px;background:var(--sub);margin-top:18px}
+.seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:8px 10px;font:500 13px Inter,system-ui,sans-serif;color:var(--mut);cursor:pointer;display:flex;gap:6px;align-items:center;justify-content:center;transition:.2s}
+.seg button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px #20344D26}
+.seg svg{width:15px;height:15px}
+.pay dl{margin:18px 0 0;display:grid;gap:0}
+.pay dl div{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pay dt{color:var(--mut)}.pay dd{margin:0;font-family:'Geist Mono',ui-monospace,monospace;font-size:13.5px}
+.hs{position:relative;display:inline-block}
+.hs .m,.hs .r{transition:opacity .35s,filter .35s}
+.hs .r{position:absolute;right:0;top:0;white-space:nowrap;opacity:0;filter:blur(6px)}
+.hs .m{display:inline-block;background:repeating-linear-gradient(90deg,var(--line) 0 7px,transparent 7px 10px);color:transparent;border-radius:4px;min-width:110px;text-align:right}
+.aud .hs .m{opacity:0}.aud .hs .r{opacity:1;filter:none}
+.note{display:flex;gap:8px;align-items:center;margin-top:16px;font-size:13px;color:var(--mut)}
+.note svg{width:16px;height:16px;color:var(--cr)}
+.hint{position:absolute;bottom:3vh;left:6vw;font:500 11px 'Geist Mono',ui-monospace,monospace;letter-spacing:.18em;color:var(--mut);text-transform:uppercase}
+
+/* PROSE */
+.prose{max-width:700px;margin:0 auto;padding:10vh 24px;font-size:19px;line-height:1.7;color:#33475F}
+.prose p{margin:0 0 1.1em}
+.prose .lead::first-letter{float:left;font-family:Sora,Inter,system-ui,sans-serif;font-size:4.1em;line-height:.85;padding:.06em .1em 0 0;font-weight:700;color:var(--cr)}
+.prose h2{font-size:clamp(30px,3.4vw,42px);line-height:1.1;margin:0 0 .5em;color:var(--ink)}
+.eyebrow{font:500 12px 'Geist Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--cr);margin-bottom:10px}
+code{font-family:'Geist Mono',ui-monospace,monospace,monospace;font-size:.84em;background:var(--code);color:var(--ink);padding:1px 6px;border-radius:5px}
+
+/* SCROLLY */
+.scrolly{position:relative;background:var(--sub)}
+.stage{position:sticky;top:0;height:100vh;width:100%;overflow:hidden}
+.gwrap{position:absolute;left:calc(6vw + 390px + 40px);right:40px;top:88px;bottom:5vh}
+#g{width:100%;height:100%;display:block;overflow:visible}
+.scene{opacity:0;transition:opacity .6s;pointer-events:none}.scene.on{opacity:1}
+.lens{position:absolute;top:22px;right:28px;z-index:5;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 14px;box-shadow:0 8px 24px #20344D14;font-size:13px;color:var(--mut)}
+.lens .seg{margin:0;background:var(--sub)}
+.lens .seg button{padding:7px 12px}
+.stage{transition:background .4s}
+.stage.aud{background:#FCEFF4}
+.lensNote{position:absolute;top:74px;right:28px;z-index:5;max-width:300px;font-size:12.5px;line-height:1.4;color:var(--wine);background:#fff;border:1px solid #F4C6D7;border-radius:10px;padding:7px 11px;opacity:0;transform:translateY(-4px);transition:.3s;pointer-events:none}
+.stage.aud .lensNote{opacity:1;transform:none}
+.stage.aud .lensNote.same{color:var(--mut);border-color:var(--line)}
+.lens.pulse{animation:pulse 1.6s ease-in-out 3}
+@keyframes pulse{50%{box-shadow:0 0 0 7px #E2236633}}
+.steps{position:relative;z-index:2;margin-top:-100vh;padding-bottom:40vh;pointer-events:none}.steps .card{pointer-events:auto}
+.step{min-height:100vh;display:flex;align-items:center;padding:0 0 0 6vw}
+.card{max-width:390px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px 20px;font-size:16px;line-height:1.6;color:#33475F;opacity:.35;transform:translateY(12px);transition:opacity .45s,transform .45s;box-shadow:0 18px 44px #20344D14}
+.step.on .card{opacity:1;transform:none}
+.card p{margin:0 0 .7em}.card p:last-child{margin:0}
+.card h3{font-size:24px;line-height:1.15;margin:6px 0 10px;color:var(--ink)}
+.tag{font:500 11px 'Geist Mono',ui-monospace,monospace;letter-spacing:.14em;color:var(--cr);text-transform:uppercase}
+.card strong{color:var(--ink)}
+.chap .card{background:none;border:0;box-shadow:none;max-width:560px;padding:0}
+.chap .num{font-family:Sora,Inter,system-ui,sans-serif;font-size:120px;font-weight:700;line-height:.9;background:linear-gradient(135deg,var(--cr),var(--or));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chap h2{font-size:clamp(36px,4vw,52px);line-height:1.02;margin:10px 0 12px}
+.chap p{font-size:19px;color:var(--mut);max-width:440px}
+.card details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.card summary{cursor:pointer;font:500 12px 'Geist Mono',ui-monospace,monospace;letter-spacing:.06em;color:var(--wine);list-style:none;display:flex;gap:6px;align-items:center}
+.card summary::-webkit-details-marker{display:none}
+.card summary::before{content:"+";display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--soft);font-size:12px;transition:transform .2s}
+.card details[open] summary::before{transform:rotate(45deg)}
+.card details p{font-size:14px;line-height:1.55;color:var(--mut);margin:8px 0 0}
+.try{display:inline-flex;gap:6px;align-items:center;margin-top:6px;font:500 12px 'Geist Mono',ui-monospace,monospace;color:var(--wine);background:var(--soft);padding:6px 10px;border-radius:999px}
+
+#g text{font-family:Inter,sans-serif}
+#g .lb{font-size:14px;fill:var(--mut)}
+#g .lbB{font-size:16px;font-weight:600;fill:var(--ink)}
+#g .mn{font-family:'Geist Mono',ui-monospace,monospace,monospace;font-size:13px;fill:var(--ink)}
+#g .mnS{font-family:'Geist Mono',ui-monospace,monospace,monospace;font-size:11px;letter-spacing:.14em;fill:var(--mut)}
+#g .big{font-family:Sora,sans-serif;font-size:28px;font-weight:600;fill:var(--ink);letter-spacing:-.02em}
+#g .sens .m,#g .sens .r{transition:opacity .4s}
+#g .sens .r{opacity:0}
+.stage.aud #g .sens .m{opacity:0}.stage.aud #g .sens .r{opacity:1}
+#g .audOnly{opacity:0;transition:opacity .4s}.stage.aud #g .audOnly{opacity:1}
+#g .pubOnly{transition:opacity .4s}.stage.aud #g .pubOnly{opacity:0}
+
+/* INTERACTIVE BLOCKS */
+.block{max-width:1120px;margin:0 auto;padding:12vh 24px}
+.block .head{max-width:700px;margin-bottom:34px}
+.block .head p{font-size:18px;line-height:1.6;color:var(--mut);margin:0}
+.panel{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 24px 64px #20344D12;padding:28px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 15px;font:500 14px Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer;transition:.18s;display:inline-flex;gap:8px;align-items:center}
+.pill:hover{border-color:var(--mut)}
+.pill[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill small{font:400 12px 'Geist Mono',ui-monospace,monospace;opacity:.7}
+.lbl{font:500 12px 'Geist Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+.who{display:grid;grid-template-columns:300px 1fr;gap:28px}
+.who .obs{display:grid;gap:8px}
+.who .obs .pill{justify-content:flex-start;border-radius:12px;padding:12px 14px;width:100%}
+.obsIcon{width:30px;height:30px;border-radius:9px;background:var(--soft);display:grid;place-items:center;color:var(--cr);flex:none}
+.pill[aria-pressed=true] .obsIcon{background:#ffffff22;color:#fff}
+.obsIcon svg{width:17px;height:17px}
+.see{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.see > div{border-radius:16px;padding:18px 20px;min-height:180px}
+.see .yes{background:#F3FBEA;border:1px solid #DDF3C4}.see .no{background:var(--sub);border:1px solid var(--line)}
+.see h5{margin:0 0 10px;font:600 13px Inter,system-ui,sans-serif;display:flex;gap:8px;align-items:center}
+.see .yes h5{color:var(--okd)}.see .no h5{color:var(--mut)}
+.see ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15.5px;line-height:1.45}
+.see li{display:flex;gap:10px;animation:in .35s both}
+.see li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;margin-top:8px;background:currentColor;opacity:.6}
+.see .yes li{color:#2f4a18}.see .no li{color:var(--mut)}
+@keyframes in{from{opacity:0;transform:translateY(5px)}}
+.whoTitle{font-family:Sora,Inter,system-ui,sans-serif;font-size:22px;margin:4px 0 0;letter-spacing:-.025em}
+.whoSub{color:var(--mut);font-size:15px;margin:6px 0 0}
+
+.sim{display:grid;grid-template-columns:360px 1fr;gap:28px}
+.sim .ctl{display:grid;gap:22px;align-content:start}
+.amt{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 14px}
+.amt span{font:500 14px 'Geist Mono',ui-monospace,monospace;color:var(--mut)}
+.amt input{flex:1;border:0;font:500 20px 'Geist Mono',ui-monospace,monospace;color:var(--ink);width:100px;outline:none;background:transparent}
+.conv{font-size:13.5px;color:var(--mut);margin-top:8px}
+.conv.warn{color:var(--err)}
+.go{border:0;background:var(--action,#C21852);color:#fff;font:600 15px Inter,system-ui,sans-serif;border-radius:10px;padding:14px 18px;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:8px}
+.go:hover{background:#B4184D}.go:disabled{background:#E3E8EF;color:var(--mut);cursor:not-allowed}
+.out{display:grid;gap:18px}
+.states{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.st{font:500 12.5px 'Geist Mono',ui-monospace,monospace;padding:7px 10px;border-radius:8px;background:var(--sub);color:#9AA7B7;border:1px solid var(--line);transition:.3s}
+.st.done{background:#F3FBEA;color:var(--okd);border-color:#DDF3C4}
+.st.now{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 0 0 4px #20344D1F}
+.st.bad{background:#FDECEA;color:#8A2A20;border-color:#F6C9C3}
+.arrow{color:#B9C4D2;font-size:12px}
+.explorer{background:var(--ink);color:#DDE6F1;border-radius:16px;padding:16px 18px;font:13px/1.6 'Geist Mono',ui-monospace,monospace,monospace;min-height:200px}
+.explorer .hd{display:flex;justify-content:space-between;color:#8FA3BC;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.explorer .hd b{color:var(--oks);font-weight:500;letter-spacing:0;text-transform:none;font-size:13px}
+.explorer .ln{animation:in .35s both;padding:3px 0;border-bottom:1px dashed #33496A}
+.explorer .ln i{font-style:normal;color:#FF8FB2}
+.explorer .empty{color:#6E83A0}
+.result{border-radius:14px;padding:16px 18px;font-size:15.5px;line-height:1.55;background:var(--sub);border:1px solid var(--line);min-height:58px}
+.result.ok{background:#F3FBEA;border-color:#DDF3C4;color:#2f4a18}
+.result.bad{background:#FDECEA;border-color:#F6C9C3;color:#7a261d}
+.result b{font-family:'Geist Mono',ui-monospace,monospace;font-weight:500}
+
+.limits{display:grid;gap:10px}
+.lim{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.lim button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;gap:14px;align-items:center;padding:18px 20px;font:600 16.5px Inter,system-ui,sans-serif;color:var(--ink)}
+.lim button span.n{font:500 12px 'Geist Mono',ui-monospace,monospace;color:var(--cr);width:24px}
+.lim button i{margin-left:auto;font-style:normal;color:var(--mut);transition:transform .25s}
+.lim.open button i{transform:rotate(45deg)}
+.lim .body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s}
+.lim.open .body{grid-template-rows:1fr}
+.lim .body > div{overflow:hidden;padding:0 20px 0 58px;color:var(--mut);font-size:15.5px;line-height:1.6}
+.lim.open .body > div{padding-bottom:18px}
+.lim .fix{display:inline-block;margin-top:6px;font:500 12px 'Geist Mono',ui-monospace,monospace;color:var(--info);background:#E5F5FB;padding:4px 8px;border-radius:6px}
+
+.final{background:var(--ink);color:#DDE6F1;padding:0 6vw;min-height:46vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.finIn{position:relative;z-index:1;max-width:1100px}
+.finBrand{color:#fff;margin-bottom:22px}.finBrand span{color:#B7C5D8}
+.final .facts{margin:30px 0 4px}
+.final .links{margin-top:0;position:relative;z-index:1}
+.final h2{color:#fff;font-size:clamp(34px,4vw,54px);margin:0 0 18px;max-width:820px;line-height:1.05}
+.final p{max-width:680px;font-size:18px;line-height:1.65;color:#B7C5D8}
+.final .links{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.final .links a{color:#fff;text-decoration:none;border:1px solid #ffffff33;border-radius:10px;padding:11px 16px;font:500 14px Inter,system-ui,sans-serif}
+.final .links a.pri{background:var(--cr);border-color:var(--cr)}
+.final .warn{margin-top:30px;font:500 13.5px Inter,system-ui,sans-serif;color:var(--ap)}
+.final .iso{position:absolute;right:-60px;bottom:-80px;height:440px;fill:#ffffff0d;pointer-events:none}
+.final .warn{max-width:760px;line-height:1.7}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin-top:8px}
+.facts div{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:14px;padding:18px 20px;font-size:15px;line-height:1.55;color:#C9D5E4}
+.facts b{display:block;font:500 12px 'Geist Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ap);margin-bottom:8px}
+.facts a{color:#fff}
+@media (max-width:980px){.facts{grid-template-columns:1fr}}
+.proof{max-width:760px;display:grid;gap:8px}
+.proof a{display:flex;align-items:center;gap:14px;background:#ffffff0d;border:1px solid #ffffff1f;border-radius:12px;padding:12px 16px;color:#fff;text-decoration:none;font-size:15px;transition:.2s}
+.proof a:hover{background:#ffffff1a}
+.proof a span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--cr);font:600 12px Inter,system-ui,sans-serif;flex:none}
+.proof a code{margin-left:auto;background:#ffffff14;color:var(--ap)}
+.foot{font-size:13px;color:#8FA3BC;margin-top:34px;max-width:760px;line-height:1.6}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr;padding:6vh 20px 10vh}
+  .mesh{min-height:auto;padding:26px 16px}
+  .hint{display:none}
+  .stage{height:100svh}
+  .gwrap{left:8px;right:8px;top:58px;bottom:auto;height:min(calc((100vw - 16px) * .75),52svh)}
+  .lens{top:10px;right:50%;transform:translateX(50%);padding:4px 4px 4px 10px;font-size:12px;white-space:nowrap}
+  .lens .seg button{padding:6px 9px;font-size:12px}
+  .lensNote{top:50px;right:50%;transform:translateX(50%)!important;max-width:92vw;white-space:nowrap;font-size:11.5px;padding:4px 9px}
+  .steps{margin-top:-100svh}
+  .step{min-height:100svh;padding:0 12px;align-items:flex-end;padding-bottom:12px}
+  .card{max-width:none;width:100%;font-size:15px;line-height:1.5;padding:14px 16px;max-height:calc(100svh - min(75vw,52svh) - 84px);overflow-y:auto;opacity:0;box-shadow:0 -6px 30px #20344D1A}
+  .step.on .card{opacity:1}
+  .card h3{font-size:19px;margin:4px 0 6px}
+  .card p{margin:0 0 .5em}
+  .chap .card{background:#fff;padding:16px;border-radius:16px;border:1px solid var(--line)}
+  .chap .num{font-size:56px}
+  .chap h2{font-size:30px}
+  .chap p{font-size:16px}
+  .who,.sim{grid-template-columns:1fr}
+  .see{grid-template-columns:1fr}
+  .panel{padding:18px}
+  .prose{font-size:17.5px}
+  .block{padding:9vh 16px}
+  .final{padding:0 20px}
+  .tagline,.cta{gap:8px}
+}
+/* phones held sideways and other short screens: text left, drawing right */
+@media (max-width:980px) and (max-height:540px) and (orientation:landscape){
+  .hero{min-height:auto}
+  .gwrap{left:48vw;right:8px;top:50px;bottom:8px;height:auto}
+  .lens{left:auto;right:8px;top:6px;transform:none}
+  .lensNote{display:none}
+  .step{align-items:center;padding:12px}
+  .card,.chap .card{width:calc(48vw - 24px);max-height:calc(100svh - 24px)}
+  .chap .num{font-size:40px}.chap h2{font-size:24px}
+}
+@media (min-width:981px) and (max-width:1200px){.gwrap{left:calc(4vw + 360px + 24px);right:20px}.step{padding-left:4vw}.card{max-width:360px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="iso" viewBox="0 0 272 394"><path d="M 14.99 388.98 L 120.31 281.07 L 128.77 275.23 L 139.29 271.28 L 272 269.96 L 254.26 312.10 L 245.72 329.22 L 235.66 343.81 L 224.70 355.56 L 213.09 366.39 L 198.42 377.95 L 182.65 388.48 L 172.14 391.78 L 160.31 393.75 L 10.51 393.75 Z"/><path d="M 0 394 L 109.06 267.33 L 118.92 252.19 L 125.38 235.90 L 128.77 221.24 L 130.39 205.78 L 130.39 0 L 107.75 10.54 L 85.41 23.05 L 63.07 40.82 L 42.63 60.23 L 30.88 73.75 L 20.06 87.83 L 11.83 105.35 L 5.02 122.97 L 0 138.03 Z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="langs" id="langs" role="group" data-a="ariaLang" aria-label="Idioma"><button data-l="es">ES</button><button data-l="en">EN</button><button data-l="pt">PT</button></div>
+  <div>
+    <div class="brand"><svg viewBox="0 0 272 394"><use href="#iso"/></svg>Lendara <span>Shield</span></div>
+    <div class="kicker" data-i="kicker"></div>
+    <h1 data-i="h1"></h1>
+    <p class="dek" data-i="dek"></p>
+    <div class="cta"><a class="pri" href="#como" data-i="cta1"></a><a data-app="" data-i="cta2"></a></div>
+  </div>
+  <div class="mesh">
+    <div class="pay" id="heroPay">
+      <div class="top"><div class="brand" style="font-size:17px"><svg viewBox="0 0 272 394" style="height:21px"><use href="#iso"/></svg>Lendara</div><small data-i="demo"></small></div>
+      <h4 data-i="payTitle"></h4>
+      <div class="seg" role="group" data-a="ariaView" aria-label="Elegí desde dónde mirar">
+        <button aria-pressed="true" data-v="pub"><svg><use href="#i-eye"/></svg><span data-i="segPub"></span></button>
+        <button aria-pressed="false" data-v="aud"><svg><use href="#i-key"/></svg><span data-i="segAud"></span></button>
+      </div>
+      <dl>
+        <div><dt data-i="dtFrom"></dt><dd data-i="ddPool"></dd></div>
+        <div><dt data-i="dtTo"></dt><dd><span class="hs"><span class="m" data-i="hidden"></span><span class="r" data-i="toReal"></span></span></dd></div>
+        <div><dt data-i="dtAmt"></dt><dd><span class="hs"><span class="m" data-i="hidden"></span><span class="r" data-i="amtReal"></span></span></dd></div>
+        <div><dt data-i="dtAsset"></dt><dd data-i="ddAsset"></dd></div>
+      </dl>
+      <div class="note"><svg><use href="#i-lock"/></svg><span id="heroNote"></span></div>
+    </div>
+  </div>
+  <div class="hint" data-i="hint"></div>
+</header>
+
+<section class="scrolly" id="como">
+  <div class="stage" id="stage">
+    <div class="lensNote" id="lensNote"></div>
+    <div class="lens" id="lens"><span data-i="lensLbl"></span>
+      <div class="seg" role="group" data-a="ariaLens" aria-label="Ver como público o como auditor">
+        <button aria-pressed="true" data-v="pub"><svg><use href="#i-eye"/></svg><span data-i="lensPub"></span></button>
+        <button aria-pressed="false" data-v="aud"><svg><use href="#i-key"/></svg><span data-i="lensAud"></span></button>
+      </div>
+    </div>
+    <div class="gwrap"><svg id="g" viewBox="0 0 800 600" role="img" data-a="ariaG" aria-label="Ilustración animada del recorrido de un pago con Shield">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#51647A"/></marker>
+        <marker id="arC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#E22366"/></marker>
+        <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E22366"/><stop offset="1" stop-color="#FF8A3D"/></linearGradient>
+        <radialGradient id="poolG" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#FFE9D9"/><stop offset=".55" stop-color="#FBE3ED"/><stop offset="1" stop-color="#FFB36B" stop-opacity=".9"/></radialGradient>
+        <linearGradient id="cardG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20344D"/><stop offset="1" stop-color="#2D4866"/></linearGradient>
+        <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#20344D" flood-opacity=".10"/></filter>
+      </defs>
+      <g id="scenes"></g>
+    </svg></div>
+  </div>
+
+  <div class="steps" id="steps"></div>
+</section>
+
+<section class="block" id="quien">
+  <div class="head"><div class="eyebrow" data-i="whoEyebrow"></div><h2 style="font-size:clamp(30px,3.4vw,42px);margin:0 0 12px" data-i="whoH2"></h2><p data-i="whoP"></p></div>
+  <div class="panel who">
+    <div>
+      <p class="lbl" data-i="howLbl"></p>
+      <div class="pills" id="modePills"><button class="pill" aria-pressed="true" data-m="ramp" data-i="modeRamp"></button><button class="pill" aria-pressed="false" data-m="direct" data-i="modeDirect"></button></div>
+      <p class="lbl" style="margin-top:22px" data-i="whoLbl"></p>
+      <div class="obs" id="obsPills"></div>
+    </div>
+    <div>
+      <p class="whoTitle" id="whoTitle"></p><p class="whoSub" id="whoSub"></p>
+      <div class="see"><div class="yes"><h5 data-i="sees"></h5><ul id="seeYes"></ul></div><div class="no"><h5 data-i="notSees"></h5><ul id="seeNo"></ul></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="scf">
+  <svg class="iso" viewBox="0 0 272 394"><use href="#iso"/></svg>
+  <div class="links">
+    <a class="pri" data-app="" data-i="fin1"></a>
+    <a data-app="/docs" data-i="fin2"></a>
+    <a href="https://github.com/Lendara-Org/lendara-shield" data-i="fin3"></a>
+  </div>
+</section>
+
+<script>
+// ---------- I18N ----------
+const LANGS=['es','en','pt'];
+const APP={es:'/es',en:'/en',pt:'/en'};
+const BASE='https://lendara-shield.duckdns.org';
+const SCENES=['leak','ops','idea','asp','intent','omni','transfer','balance'];
+const UI={
+es:{title:'Lendara Shield: pagar en privado sin esconderse',kicker:'Lendara Shield · Cómo funciona',h1:'Pagar en privado <em>sin esconderse</em>',
+ dek:'Con Shield pagás con tarjeta y recibís dólares digitales en un saldo privado. El público no ve tus pagos, pero un auditor autorizado puede revisarlos si hace falta. Te lo mostramos en dos minutos.',
+ cta1:'Ver cómo funciona ↓',cta2:'Probar la app ↗',demo:'Demo',payTitle:'Transferencia privada',segPub:'Público',segAud:'Auditor',dtFrom:'Desde',dtTo:'Para',dtAmt:'Monto',dtAsset:'Moneda',ddPool:'Caja fuerte privada',ddAsset:'Dólar digital',hidden:'oculto',toReal:'María',amtReal:'US$ 10,00',
+ heroPub:'El público no ve a quién ni cuánto',heroAud:'El auditor ve todo, pero no puede mover el dinero',hint:'Bajá para empezar ↓',lensLbl:'Ver como',lensPub:'Público',lensAud:'Auditor',
+ lensDiff:'En rosa: lo que solo ve el auditor',lensSame:'En este paso, el auditor ve lo mismo que el público',cur:'Para curiosos (detalle técnico)',
+ whoEyebrow:'Interactivo · ¿Quién ve qué?',whoH2:'La privacidad no es todo o nada',whoP:'Cada uno ve una parte distinta. Elegí cómo entra el dinero y quién está mirando.',
+ howLbl:'¿Cómo entra el dinero?',modeRamp:'Pago con tarjeta',modeDirect:'Ya tengo dólares digitales',whoLbl:'¿Quién mira?',sees:'✓ Ve',notSees:'✕ No ve',
+ whoRamp:'María paga con tarjeta y el dinero pasa por una casa de cambio.',whoDirect:'María ya tiene dólares digitales y los carga desde su propia billetera. En este caso se ve más.',
+ fin1:'Probar la app (versión de prueba)',fin2:'Documentación',fin3:'Código en GitHub',
+ ariaLang:'Idioma',ariaView:'Elegí desde dónde mirar',ariaLens:'Ver como público o como auditor',ariaG:'Ilustración animada del recorrido de un pago con Shield'},
+en:{title:'Lendara Shield: pay in private, not in hiding',kicker:'Lendara Shield · How it works',h1:'Pay in private, <em>not in hiding</em>',
+ dek:'With Shield, you pay by card and get digital dollars in a private balance. The public can’t see your payments, but an authorized auditor can review them when needed. Here’s how it works, in two minutes.',
+ cta1:'See how it works ↓',cta2:'Try the app ↗',demo:'Demo',payTitle:'Private transfer',segPub:'Public',segAud:'Auditor',dtFrom:'From',dtTo:'To',dtAmt:'Amount',dtAsset:'Currency',ddPool:'Private vault',ddAsset:'Digital dollar',hidden:'hidden',toReal:'María',amtReal:'US$ 10.00',
+ heroPub:'The public can’t see who or how much',heroAud:'The auditor sees everything but can’t move the money',hint:'Scroll to start ↓',lensLbl:'View as',lensPub:'Public',lensAud:'Auditor',
+ lensDiff:'In pink: what only the auditor sees',lensSame:'In this step, the auditor sees the same as the public',cur:'For the curious (technical detail)',
+ whoEyebrow:'Interactive · Who sees what?',whoH2:'Privacy isn’t all or nothing',whoP:'Each party sees a different part. Pick how the money comes in and who’s looking.',
+ howLbl:'How does the money come in?',modeRamp:'I pay by card',modeDirect:'I already have digital dollars',whoLbl:'Who’s looking?',sees:'✓ Sees',notSees:'✕ Doesn’t see',
+ whoRamp:'María pays by card and the money goes through an exchange.',whoDirect:'María already has digital dollars and adds them from her own wallet. More is visible in this case.',
+ fin1:'Try the app (test version)',fin2:'Documentation',fin3:'Code on GitHub',
+ ariaLang:'Language',ariaView:'Choose who’s looking',ariaLens:'View as the public or as the auditor',ariaG:'Animated illustration of a payment’s journey with Shield'},
+pt:{title:'Lendara Shield: pagar com privacidade, sem se esconder',kicker:'Lendara Shield · Como funciona',h1:'Pagar com privacidade, <em>sem se esconder</em>',
+ dek:'Com o Shield, você paga com cartão e recebe dólares digitais em um saldo privado. O público não vê seus pagamentos, mas um auditor autorizado pode revisá-los quando necessário. Veja como funciona em dois minutos.',
+ cta1:'Ver como funciona ↓',cta2:'Testar o app ↗',demo:'Demo',payTitle:'Transferência privada',segPub:'Público',segAud:'Auditor',dtFrom:'De',dtTo:'Para',dtAmt:'Valor',dtAsset:'Moeda',ddPool:'Cofre privado',ddAsset:'Dólar digital',hidden:'oculto',toReal:'María',amtReal:'US$ 10,00',
+ heroPub:'O público não vê para quem nem quanto',heroAud:'O auditor vê tudo, mas não pode movimentar o dinheiro',hint:'Role para começar ↓',lensLbl:'Ver como',lensPub:'Público',lensAud:'Auditor',
+ lensDiff:'Em rosa: o que só o auditor vê',lensSame:'Nesta etapa, o auditor vê o mesmo que o público',cur:'Para curiosos (detalhe técnico)',
+ whoEyebrow:'Interativo · Quem vê o quê?',whoH2:'Privacidade não é tudo ou nada',whoP:'Cada um vê uma parte diferente. Escolha como o dinheiro entra e quem está olhando.',
+ howLbl:'Como o dinheiro entra?',modeRamp:'Pago com cartão',modeDirect:'Já tenho dólares digitais',whoLbl:'Quem está olhando?',sees:'✓ Vê',notSees:'✕ Não vê',
+ whoRamp:'María paga com cartão e o dinheiro passa por uma casa de câmbio.',whoDirect:'María já tem dólares digitais e os deposita da própria carteira. Neste caso, aparece mais.',
+ fin1:'Testar o app (versão de teste)',fin2:'Documentação',fin3:'Código no GitHub',
+ ariaLang:'Idioma',ariaView:'Escolha de onde olhar',ariaLens:'Ver como o público ou como o auditor',ariaG:'Ilustração animada do percurso de um pagamento com o Shield'}};
+
+const STEPS={
+es:[
+ ['El problema · 1 de 2','Stellar es una vidriera',['En Stellar, un pago común queda a la vista de todos: quién, a quién, cuánto y cuándo.','Si María cambia su dinero por dólares digitales, estos llegan <strong>a su propia cuenta</strong>. Desde ahí, cualquiera puede seguirle el rastro.'],'','La casa de cambio es, técnicamente, una “rampa” (estándar SEP-24) que paga USDC a la dirección del usuario, con monto y hora. Esa dirección se puede seguir cuando entra al pool privado y cuando sale, en cualquier explorador como stellar.expert.'],
+ ['El problema · 2 de 2','La caja fuerte necesita un portero',['Stellar ya tiene una caja fuerte compartida donde los saldos son secretos, pero solo pueden entrar personas verificadas.','Alguien tiene que verificar a cada persona, llevar la <strong>lista de invitados</strong> y darle acceso al auditor. Hoy, cada app tendría que hacerlo por su cuenta.'],'','La caja fuerte es el pool de <strong>Stellar Private Payments</strong>, de Nethermind, todavía en versión preliminar. La lista de invitados la maneja un ASP (<em>Association Set Provider</em>), y el auditor tiene la Global View Key del pool.'],
+ ['La solución','Shield, el intermediario de confianza',['Shield recibe el dinero, lo guarda en la caja fuerte y se lo pasa a María en privado.','El público no ve la cuenta de María. Un auditor autorizado sí puede revisarlo todo.'],'','Shield es el ASP del pool y recibe los pagos en su cuenta ómnibus. No escribió ni modificó la caja fuerte: usa Stellar Private Payments tal como se publicó (<code>sdk-v0.2.1</code>). Se conecta con cualquier rampa compatible con SEP-1, SEP-10 y SEP-24.'],
+ ['Paso 1 de 4','María se registra una vez',['María se registra con su billetera digital, la app donde guarda sus dólares. La <strong>llave para mover su dinero queda en su teléfono o computadora</strong>.','Shield verifica su identidad y la suma a la lista de invitados.'],'','Las claves del pool se derivan de una firma de Freighter. A Shield solo le llegan la clave pública y la "hoja" de la lista de permitidos, firmadas por la cuenta (SEP-53). La lista es un árbol de Merkle en un contrato: cada movimiento exige probar que la clave está ahí y que no está en la lista de bloqueo.'],
+ ['Paso 2 de 4','Paga con tarjeta',['María pide cargar US$ 10 y paga con tarjeta, como en cualquier web.','El detalle clave: la casa de cambio manda los dólares <strong>a Shield</strong>, no a la cuenta de María.'],'','El pedido lleva firma SEP-53 y un <code>request_id</code> de un solo uso. Shield abre el depósito con SEP-10 y SEP-24 hacia su cuenta ómnibus, con un memo aleatorio. La rampa convierte el dinero a USDC.'],
+ ['Paso 3 de 4','El dinero pasa por Shield',['Los dólares llegan a Shield, y Shield los guarda en la caja fuerte.','En el registro público solo se ve “casa de cambio → Shield → caja fuerte”. La cuenta de María <strong>no aparece ni una vez</strong>.'],'','Shield solo da un pago por bueno si la rampa confirma esa misma transacción, así que alguien que copie el memo no puede apropiarse del depósito. El depósito al pool tiene <code>ext_amount &gt; 0</code>, y el hash se guarda antes de enviarlo para no pagar nunca dos veces.'],
+ ['Paso 4 de 4','Llega a María, en privado',['Dentro de la caja fuerte, Shield le pasa el dinero a María. El público no ve cuánto ni a quién.','La red comprueba que el pago es válido <strong>sin ver los números</strong>.'],'↗ Tocá “Auditor” arriba para ver lo que ve el auditor','Es una transferencia con <code>ext_amount = 0</code> y una prueba de conocimiento cero Groth16 (BN254), que el contrato verifica.'],
+ ['Resultado','Saldo privado en 60 segundos',['Así funcionó en una prueba real en Stellar.','El público no ve el saldo. El auditor sí puede verlo, pero no moverlo.'],'','Corrida real en testnet del 26/10/2026: completada 60 s después del pedido y 40 s después del pago de la rampa, sin pasos manuales. Los montos de esta nota son ilustrativos.']],
+en:[
+ ['The problem · 1 of 2','Stellar is a shop window',['On Stellar, a regular payment is visible to everyone: who, to whom, how much and when.','If María exchanges her money for digital dollars, they land <strong>in her own account</strong>. From there, anyone can follow her trail.'],'','Technically, the exchange is an “on-ramp” (SEP-24 standard) that pays USDC to the user’s address, with amount and time. That address can be followed into the private pool and back out, in any explorer such as stellar.expert.'],
+ ['The problem · 2 of 2','The vault needs a doorman',['Stellar already has a shared vault where balances are secret, but only verified people can get in.','Someone has to verify each person, keep the <strong>guest list</strong> and give the auditor access. Today, every app would have to do that on its own.'],'','The vault is the <strong>Stellar Private Payments</strong> pool, by Nethermind, still a developer preview. The guest list is run by an ASP (<em>Association Set Provider</em>), and the auditor holds the pool’s Global View Key.'],
+ ['The solution','Shield, the trusted intermediary',['Shield receives the money, puts it in the vault and passes it to María privately.','The public doesn’t see María’s account. An authorized auditor can still review everything.'],'','Shield is the pool’s ASP and receives payments on its omnibus account. It didn’t write or modify the vault: it uses Stellar Private Payments as published (<code>sdk-v0.2.1</code>). It works with any on-ramp that supports SEP-1, SEP-10 and SEP-24.'],
+ ['Step 1 of 4','María signs up once',['María signs up with her digital wallet, the app where she keeps her dollars. The <strong>key that moves her money stays on her phone or computer</strong>.','Shield verifies her identity and adds her to the guest list.'],'','The pool keys are derived from a Freighter signature. Shield only receives the public key and the allow-list “leaf”, signed by the account (SEP-53). The list is a Merkle tree in a contract: every move must prove the key is on it and not on the blocklist.'],
+ ['Step 2 of 4','She pays by card',['María asks to add US$ 10 and pays by card, like on any website.','The key detail: the exchange sends the dollars <strong>to Shield</strong>, not to María’s account.'],'','The request carries a SEP-53 signature and a single-use <code>request_id</code>. Shield opens the deposit through SEP-10 and SEP-24 to its omnibus account, with a random memo. The on-ramp converts the money to USDC.'],
+ ['Step 3 of 4','The money goes through Shield',['The dollars reach Shield, and Shield puts them in the vault.','The public record only shows “exchange → Shield → vault”. María’s account <strong>doesn’t appear at all</strong>.'],'','Shield only accepts a payment if the on-ramp confirms that exact transaction, so someone copying the memo can’t claim the deposit. The pool deposit has <code>ext_amount &gt; 0</code>, and its hash is saved before sending, so it is never paid twice.'],
+ ['Step 4 of 4','It reaches María, privately',['Inside the vault, Shield passes the money to María. The public can’t see how much or to whom.','The network checks that the payment is valid <strong>without seeing the numbers</strong>.'],'↗ Tap “Auditor” above to see what the auditor sees','It’s a transfer with <code>ext_amount = 0</code> and a Groth16 zero-knowledge proof (BN254) that the contract verifies.'],
+ ['Result','A private balance in 60 seconds',['That’s how it went in a real test on Stellar.','The public can’t see the balance. The auditor can see it, but can’t move it.'],'','Real testnet run on 2026-10-26: completed 60 s after the request and 40 s after the on-ramp’s payment, with no manual steps. Amounts in this explainer are illustrative.']],
+pt:[
+ ['O problema · 1 de 2','A Stellar é uma vitrine',['Na Stellar, um pagamento comum fica à vista de todos: quem, para quem, quanto e quando.','Se a María troca o dinheiro por dólares digitais, eles chegam <strong>na conta dela</strong>. A partir daí, qualquer pessoa pode seguir o rastro.'],'','Tecnicamente, a casa de câmbio é uma “rampa” (padrão SEP-24) que paga USDC no endereço do usuário, com valor e horário. Esse endereço pode ser seguido quando entra no pool privado e quando sai, em qualquer explorador como o stellar.expert.'],
+ ['O problema · 2 de 2','O cofre precisa de um porteiro',['A Stellar já tem um cofre compartilhado onde os saldos são secretos, mas só entram pessoas verificadas.','Alguém precisa verificar cada pessoa, manter a <strong>lista de convidados</strong> e dar acesso ao auditor. Hoje, cada app teria que fazer isso sozinho.'],'','O cofre é o pool do <strong>Stellar Private Payments</strong>, da Nethermind, ainda em versão preliminar. A lista de convidados é mantida por um ASP (<em>Association Set Provider</em>), e o auditor tem a Global View Key do pool.'],
+ ['A solução','Shield, o intermediário de confiança',['O Shield recebe o dinheiro, guarda no cofre e repassa para a María com privacidade.','O público não vê a conta da María. Um auditor autorizado pode revisar tudo.'],'','O Shield é o ASP do pool e recebe os pagamentos na sua conta ômnibus. Ele não escreveu nem modificou o cofre: usa o Stellar Private Payments como foi publicado (<code>sdk-v0.2.1</code>). Funciona com qualquer rampa compatível com SEP-1, SEP-10 e SEP-24.'],
+ ['Passo 1 de 4','María se cadastra uma vez',['María se cadastra com a carteira digital, o app onde guarda seus dólares. A <strong>chave que movimenta o dinheiro fica no celular ou computador dela</strong>.','O Shield verifica a identidade dela e a inclui na lista de convidados.'],'','As chaves do pool são derivadas de uma assinatura da Freighter. O Shield só recebe a chave pública e a “folha” da lista de permitidos, assinadas pela conta (SEP-53). A lista é uma árvore de Merkle em um contrato: cada movimentação precisa provar que a chave está nela e que não está na lista de bloqueio.'],
+ ['Passo 2 de 4','Paga com cartão',['María pede para adicionar US$ 10 e paga com cartão, como em qualquer site.','O detalhe principal: a casa de câmbio manda os dólares <strong>para o Shield</strong>, não para a conta da María.'],'','O pedido leva assinatura SEP-53 e um <code>request_id</code> de uso único. O Shield abre o depósito com SEP-10 e SEP-24 para a sua conta ômnibus, com um memo aleatório. A rampa converte o dinheiro em USDC.'],
+ ['Passo 3 de 4','O dinheiro passa pelo Shield',['Os dólares chegam ao Shield, e o Shield guarda no cofre.','No registro público só aparece “casa de câmbio → Shield → cofre”. A conta da María <strong>não aparece nenhuma vez</strong>.'],'','O Shield só aceita um pagamento se a rampa confirmar exatamente essa transação, então quem copiar o memo não consegue se apropriar do depósito. O depósito no pool tem <code>ext_amount &gt; 0</code>, e o hash é salvo antes do envio para nunca pagar duas vezes.'],
+ ['Passo 4 de 4','Chega à María, com privacidade',['Dentro do cofre, o Shield repassa o dinheiro para a María. O público não vê quanto nem para quem.','A rede verifica que o pagamento é válido <strong>sem ver os números</strong>.'],'↗ Toque em “Auditor” lá em cima para ver o que o auditor vê','É uma transferência com <code>ext_amount = 0</code> e uma prova de conhecimento zero Groth16 (BN254), verificada pelo contrato.'],
+ ['Resultado','Saldo privado em 60 segundos',['Foi assim em um teste real na Stellar.','O público não vê o saldo. O auditor vê, mas não pode movimentá-lo.'],'','Execução real na testnet em 26/10/2026: concluída 60 s depois do pedido e 40 s depois do pagamento da rampa, sem passos manuais. Os valores desta explicação são ilustrativos.']]};
+
+const OBS_T={
+en:[['The public','anyone looking at the record'],['The exchange','turns your money into digital dollars'],['Shield','the intermediary'],['The auditor','can look, can’t touch'],['Another user','someone else in the vault']],
+pt:[['O público','qualquer um olhando o registro'],['A casa de câmbio','troca seu dinheiro por dólares digitais'],['Shield','o intermediário'],['O auditor','pode ver, não pode mexer'],['Outro usuário','outra pessoa no cofre']]};
+const SEE_T={
+en:{ramp:{pub:[['That the exchange sent money to Shield','That Shield put money in the vault','That Shield made private transactions'],['María’s account','Who received what','How much moved privately']],
+ anchor:[['Who María is (it verified her identity)','How much she paid'],['What happens inside the vault','Where the money ended up']],
+ shield:[['Who’s who inside the vault (it keeps the guest list)','Every top-up request: who, how much and when'],['María’s key to move her money: it stays on her device']],
+ aud:[['Every balance and transaction in the vault: whose and how much'],['Nothing. That’s the deal: the vault has controls']],
+ other:[['Nothing about anyone else'],['Other people’s balances','Other people’s transactions']]},
+ direct:{pub:[['María’s account when she adds money, and how much','That her account makes private transactions','Her withdrawals, and how much'],['How much she moves privately','Who she sends money to']],
+ anchor:[['Nothing: it isn’t involved in this case'],['The whole journey']],
+ shield:[['Who’s who inside the vault'],['María’s key to move her money']],
+ aud:[['Every balance and transaction: whose and how much'],['Nothing']],
+ other:[['Nothing about anyone else'],['Other people’s balances','Other people’s transactions']]}},
+pt:{ramp:{pub:[['Que a casa de câmbio enviou dinheiro ao Shield','Que o Shield guardou dinheiro no cofre','Que o Shield fez movimentações privadas'],['A conta da María','Quem recebeu o quê','Quanto foi movimentado em privado']],
+ anchor:[['Quem é a María (verificou a identidade dela)','Quanto ela pagou'],['O que acontece dentro do cofre','Para onde o dinheiro foi']],
+ shield:[['Quem é quem dentro do cofre (mantém a lista de convidados)','Cada pedido de depósito: quem, quanto e quando'],['A chave da María para movimentar o dinheiro: fica no dispositivo dela']],
+ aud:[['Cada saldo e movimentação do cofre: de quem e quanto'],['Nada. Esse é o acordo: o cofre tem controles']],
+ other:[['Nada sobre os outros'],['Saldos alheios','Movimentações alheias']]},
+ direct:{pub:[['A conta da María quando deposita, e quanto','Que a conta dela faz movimentações privadas','Os saques dela, e quanto'],['Quanto ela movimenta em privado','Para quem ela manda dinheiro']],
+ anchor:[['Nada: neste caso ela não participa'],['Todo o percurso']],
+ shield:[['Quem é quem dentro do cofre'],['A chave da María para movimentar o dinheiro']],
+ aud:[['Cada saldo e movimentação: de quem e quanto'],['Nada']],
+ other:[['Nada sobre os outros'],['Saldos alheios','Movimentações alheias']]}}};
+
+// labels inside the animated scenes: Spanish → [English, Portuguese]
+const SVG_T={
+'FUERA DE STELLAR':['OUTSIDE STELLAR','FORA DA STELLAR'],'REGISTRO PÚBLICO':['PUBLIC RECORD','REGISTRO PÚBLICO'],'con tarjeta':['by card','com cartão'],'Casa de cambio':['Exchange','Casa de câmbio'],
+'dólares':['dollars','dólares'],'su cuenta, a la vista':['her account, in plain sight','a conta dela, à vista'],'caja fuerte':['vault','cofre'],'sale: María':['out: María','saída: María'],
+'el rastro se puede seguir':['the trail can be followed','dá para seguir o rastro'],'al entrar y al salir':['going in and coming out','na entrada e na saída'],
+'caja fuerte con lista de invitados':['vault with a guest list','cofre com lista de convidados'],'identidad':['identity','identidade'],'invitados':['guests','convidados'],'costos':['costs','custos'],
+'cada app construye lo mismo, por separado':['every app builds the same thing, separately','cada app constrói a mesma coisa, separadamente'],
+'destino: oculto':['recipient: hidden','destino: oculto'],'claves de María':['María’s keys','chaves da María'],
+'tarjeta':['card','cartão'],'guarda':['stores','guarda'],'en privado':['privately','em privado'],'SHIELD SE OCUPA DE':['SHIELD TAKES CARE OF','O SHIELD CUIDA DE'],
+'verificar identidades':['verifying identities','verificar identidades'],'recibir los dólares':['receiving the dollars','receber os dólares'],'guardarlos en la caja fuerte':['storing them in the vault','guardá-los no cofre'],
+'pasarlos en privado':['passing them on privately','repassá-los em privado'],'darle acceso al auditor':['giving the auditor access','dar acesso ao auditor'],
+'Identidad verificada ✓':['Identity verified ✓','Identidade verificada ✓'],'lista':['list','lista'],'guardada en Stellar':['stored on Stellar','guardada na Stellar'],'nueva persona':['new person','nova pessoa'],
+'lista de invitados verificados':['list of verified guests','lista de convidados verificados'],'lista de bloqueo':['blocklist','lista de bloqueio'],
+'si una cuenta está acá, su dinero se congela':['if an account is here, its money is frozen','se uma conta está aqui, o dinheiro fica congelado'],
+'CARGAR CON TARJETA':['ADD MONEY BY CARD','ADICIONAR COM CARTÃO'],'Monto':['Amount','Valor'],'firmado por María':['signed by María','assinado pela María'],'pedido':['request','pedido'],
+'no se puede repetir':['can’t be reused','não pode ser repetido'],'referencia':['reference','referência'],'única':['unique','única'],'Continuar':['Continue','Continuar'],
+'pide el pago':['requests payment','pede o pagamento'],'(para Shield)':['(for Shield)','(para o Shield)'],'el dinero va a':['the money goes to','o dinheiro vai para'],
+'la cuenta de Shield, no la de María':['Shield’s account, not María’s','a conta do Shield, não a da María'],'cuenta de Shield':['Shield’s account','conta do Shield'],
+'no aparece':['not shown','não aparece'],'LO QUE VE EL PÚBLICO':['WHAT THE PUBLIC SEES','O QUE O PÚBLICO VÊ'],'de':['from','de'],'a':['to','para'],'monto':['amount','valor'],
+'US$ 10,00':['US$ 10.00','US$ 10,00'],'saldo':['balance','saldo'],'¿de quién?':['whose?','de quem?'],'válido ✓':['valid ✓','válido ✓'],
+'la red valida sin ver los números':['checked without seeing the numbers','a rede valida sem ver os números'],
+'firmada por':['signed by','assinada por'],'entra dinero de afuera':['money from outside','entra dinheiro de fora'],'no':['no','não'],'oculto':['hidden','oculto'],'destino':['recipient','destino'],
+'Saldo privado':['Private balance','Saldo privado'],'10,00':['10.00','10,00'],'dólares digitales':['digital dollars','dólares digitais'],
+'el público':['the public','o público'],'el auditor':['the auditor','o auditor'],'no lo ve':['can’t see it','não vê'],'sí lo ve':['can see it','vê'],'Enviar en privado':['Send privately','Enviar em privado'],
+'llega el pago':['payment arrives','chega o pagamento'],'a la caja':['into the vault','para o cofre'],'a María':['to María','para a María'],'listo':['done','pronto']};
+
+function detectLang(){try{const s=localStorage.getItem('shield-lang');if(LANGS.includes(s))return s}catch(e){}
+ const n=((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase();return n.startsWith('es')?'es':n.startsWith('pt')?'pt':'en'}
+let L=detectLang();
+const TR=x=>{if(L==='es')return x;const v=SVG_T[x];return v?v[L==='en'?0:1]:x};
+
+const C={ink:'#20344D',mut:'#51647A',line:'#D9E2EC',sub:'#F5F8FC',cr:'#E22366',wine:'#C21852',or:'#FF8A3D',co:'#FF6255',ap:'#FFB36B',pe:'#FFE9D9',soft:'#FBE3ED',ok:'#75B52E',okd:'#2C4A12',info:'#279EC5',wh:'#fff',code:'#EAF0F8'};
+const f=n=>(+n).toFixed(1);
+const ISO=`<path d="M 14.99 388.98 L 120.31 281.07 L 128.77 275.23 L 139.29 271.28 L 272 269.96 L 254.26 312.10 L 245.72 329.22 L 235.66 343.81 L 224.70 355.56 L 213.09 366.39 L 198.42 377.95 L 182.65 388.48 L 172.14 391.78 L 160.31 393.75 L 10.51 393.75 Z"/><path d="M 0 394 L 109.06 267.33 L 118.92 252.19 L 125.38 235.90 L 128.77 221.24 L 130.39 205.78 L 130.39 0 L 107.75 10.54 L 85.41 23.05 L 63.07 40.82 L 42.63 60.23 L 30.88 73.75 L 20.06 87.83 L 11.83 105.35 L 5.02 122.97 L 0 138.03 Z"/>`;
+function iso(cx,cy,h,col){const k=h/394;return `<g transform="translate(${f(cx-136*k)},${f(cy-197*k)}) scale(${k.toFixed(4)})" fill="${col}">${ISO}</g>`}
+function t(x,y,s,o={}){s=TR(s);return `<text x="${x}" y="${y}"${o.a?` text-anchor="${o.a}"`:''} class="${o.c||'lb'}"${o.f?` style="fill:${o.f}"`:''}${o.x||''}>${s}</text>`}
+function R(x,y,w,h,o={}){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.rx??14}" fill="${o.fill||C.wh}" stroke="${o.st||C.line}" stroke-width="${o.sw||1.5}"${o.dash?` stroke-dasharray="${o.dash}"`:''}${o.sh===false?'':' filter="url(#sh)"'}${o.x||''}/>`}
+function dot(path,col,dur,begin=0,r=5){return `<circle r="${r}" fill="${col}"><animateMotion path="${path}" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/></circle>`}
+function coin(path,dur,begin=0){return `<g><circle r="11" fill="url(#grad)"/><text y="4" text-anchor="middle" style="font:600 10px Inter,system-ui,sans-serif;fill:#fff">$</text><animateMotion path="${path}" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/></g>`}
+const once=(attr,from,to,dur,delay=0)=>`<animate attributeName="${attr}" from="${from}" to="${to}" dur="${dur}s" begin="indefinite" fill="freeze" data-d="${delay}"/>`;
+function sens(x,y,m,r,o={}){return `<g class="sens">${t(x,y,m,{...o,c:(o.c||'mn')+' m',f:o.mf||'#9AA7B7'})}${t(x,y,r,{...o,c:(o.c||'mn')+' r',f:o.rf||C.cr})}</g>`}
+function icon(id,x,y,s,col){return `<svg x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" style="color:${col}"><use href="#${id}"/></svg>`}
+function person(x,y,label='María'){return `<g><circle cx="${x}" cy="${y}" r="34" fill="${C.soft}" stroke="${C.cr}" stroke-width="1.5"/>${icon('i-user',x,y,32,C.cr)}${t(x,y+56,label,{a:'middle',c:'lbB'})}</g>`}
+function bank(x,y,label='Casa de cambio'){return `<g><circle cx="${x}" cy="${y}" r="34" fill="${C.wh}" stroke="${C.ink}" stroke-width="1.5" filter="url(#sh)"/>${icon('i-bank',x,y,30,C.ink)}${t(x,y+56,label,{a:'middle',c:'lbB'})}</g>`}
+function shield(x,y,s=70,label='Shield'){return `<g><rect x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" rx="${s*.28}" fill="url(#grad)" filter="url(#sh)"/>${iso(x,y,s*.56,'#fff')}${label?t(x,y+s/2+22,label,{a:'middle',c:'lbB'}):''}</g>`}
+function pool(x,y,r,label='pool privado',notes=6){let s=`<g><circle cx="${x}" cy="${y}" r="${r}" fill="url(#poolG)" stroke="${C.cr}" stroke-opacity=".35" stroke-width="1.5"/>`;
+ s+=`<g opacity=".8">`;for(let i=0;i<notes;i++){const a=i/notes*Math.PI*2,rr=r*.62;s+=`<circle cx="${f(x+Math.cos(a)*rr)}" cy="${f(y+Math.sin(a)*rr)}" r="${r*.07}" fill="#fff" stroke="${C.cr}" stroke-opacity=".5"/>`}
+ s+=`<animateTransform attributeName="transform" type="rotate" from="0 ${x} ${y}" to="360 ${x} ${y}" dur="26s" repeatCount="indefinite"/></g>`;
+ if(label)s+=t(x,y+r+24,label,{a:'middle',c:'lbB'});return s+'</g>'}
+function mag(x,y,s=34){return icon('i-eye',x,y,s,C.ink)}
+function arrow(x1,y1,x2,y2,col=C.mut,dash=''){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="1.6"${dash?` stroke-dasharray="${dash}"`:''} marker-end="url(#${col===C.cr?'arC':'ar'})"/>`}
+function chip(x,y,w,txt,o={}){return `<g>${R(x,y,w,26,{rx:13,fill:o.fill||C.sub,st:o.st||C.line,sh:false})}${t(x+w/2,y+17.5,txt,{a:'middle',c:'mn',f:o.f||C.ink})}</g>`}
+
+const S={};
+S.leak=()=>{let s=`<rect x="20" y="130" width="300" height="350" rx="20" fill="none" stroke="${C.line}" stroke-dasharray="5 6"/>`+t(40,158,'FUERA DE STELLAR',{c:'mnS'});
+ s+=`<rect x="340" y="130" width="450" height="350" rx="20" fill="${C.wh}" fill-opacity=".6" stroke="${C.cr}" stroke-opacity=".4" stroke-dasharray="5 6"/>`+t(360,158,'REGISTRO PÚBLICO',{c:'mnS',f:C.cr});
+ s+=person(90,290)+arrow(130,290,205,290)+t(168,262,'US$ 10',{a:'middle',c:'mn'})+t(168,320,'con tarjeta',{a:'middle'});
+ s+=bank(250,290)+arrow(290,290,372,290)+t(330,250,'dólares',{a:'middle',c:'mn'});
+ s+=R(375,245,150,92,{st:C.cr})+t(450,277,'María',{a:'middle',c:'lbB',f:C.cr})+t(450,301,'+ US$ 10',{a:'middle',c:'mn'})+t(450,323,'su cuenta, a la vista',{a:'middle',c:'lb',x:' font-size="12"'});
+ s+=mag(505,232,30);
+ s+=pool(680,290,72,'caja fuerte',5);
+ const tr='M525,291 L608,291';s+=`<path d="${tr}" stroke="${C.cr}" stroke-width="3" stroke-dasharray="7 6" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-26" dur=".8s" repeatCount="indefinite"/></path>`;
+ const out='M705,360 C700,420 600,440 530,430';s+=`<path d="${out}" stroke="${C.cr}" stroke-width="3" stroke-dasharray="7 6" fill="none" marker-end="url(#arC)"><animate attributeName="stroke-dashoffset" from="0" to="-26" dur=".8s" repeatCount="indefinite"/></path>`;
+ s+=R(390,405,140,52,{st:C.cr,sh:false})+t(460,436,'sale: María',{a:'middle',c:'mn',f:C.cr,x:' font-size="12"'});
+ s+=t(560,200,'el rastro se puede seguir',{a:'middle',c:'lbB',f:C.cr})+t(560,220,'al entrar y al salir',{a:'middle'});return s};
+
+S.ops=()=>{let s=pool(560,300,110,'caja fuerte con lista de invitados',7);
+ ['App A','App B','App C'].forEach((a,i)=>{const y=95+i*150;s+=R(50,y,220,112)+t(70,y+28,a,{c:'lbB'});
+  [['identidad',0,0],['invitados',1,0],['auditor',0,1],['costos',1,1]].forEach(([k,cx,cy])=>s+=chip(68+cx*100,y+44+cy*32,92,k,{fill:'#fff',st:C.cr,f:C.wine}));
+  s+=`<path d="M272,${y+56} C360,${y+56} 380,300 448,300" fill="none" stroke="${C.mut}" stroke-dasharray="4 5"/>`});
+ s+=t(160,575,'cada app construye lo mismo, por separado',{a:'middle',c:'lbB',f:C.cr});return s};
+
+S.idea=()=>{const P='M110,240 L730,240';let s=`<path d="${P}" stroke="${C.line}" stroke-width="4" fill="none"/>`+`<g class="pubOnly">${chip(560,130,200,'destino: oculto',{f:C.mut})}</g><g class="audOnly">${chip(560,130,200,'US$ 10 → María',{fill:C.soft,st:C.cr,f:C.wine})}</g>`;
+ s+=person(80,240)+bank(225,240)+shield(400,240,86,'')+pool(580,240,62,'',5);
+ s+=`<g><circle cx="725" cy="240" r="30" fill="#fff" stroke="${C.cr}" stroke-width="1.5" filter="url(#sh)"/>${icon('i-key',725,240,28,C.cr)}</g>`;
+ s+=t(400,306,'Shield',{a:'middle',c:'lbB'})+t(580,326,'caja fuerte',{a:'middle',c:'lbB'})+t(725,296,'claves de María',{a:'middle',c:'lbB',x:' font-size="14"'});
+ [['tarjeta',152],['dólares',312],['guarda',490],['en privado',655]].forEach(([k,x])=>s+=t(x,212,k,{a:'middle',c:'mn',f:C.mut,x:' font-size="11.5"'}));
+ s+=coin('M110,240 L700,240',5.5,0)+coin('M110,240 L700,240',5.5,-2.75);
+ s+=R(290,370,220,190)+t(310,400,'SHIELD SE OCUPA DE',{c:'mnS',f:C.cr});
+ ['verificar identidades','recibir los dólares','guardarlos en la caja fuerte','pasarlos en privado','darle acceso al auditor'].forEach((k,i)=>s+=`<g opacity="0">${t(312,432+i*26,'✓',{c:'mn',f:C.ok})}${t(332,432+i*26,k,{f:C.ink,x:' font-size="13.5"'})}${once('opacity',0,1,.3,.3+i*.15)}</g>`);
+ s+=`<path d="M400,328 L400,368" stroke="${C.line}" stroke-width="2"/>`;return s};
+
+S.asp=()=>{let s=R(30,40,210,44,{rx:22,fill:'#F3FBEA',st:'#C9EBA4'})+t(135,68,'Identidad verificada ✓',{a:'middle',c:'lbB',f:C.okd,x:' font-size="14.5"'});
+ const L=[[ [400,130] ],[[250,230],[550,230]],[[175,330],[325,330],[475,330],[625,330]],[...Array(8)].map((_,i)=>[137+i*75,430])];
+ for(let l=1;l<4;l++)L[l].forEach((p,i)=>{const q=L[l-1][Math.floor(i/2)];const hot=(l===3&&i===7)||(l===2&&i===3)||(l===1&&i===1);s+=`<line x1="${q[0]}" y1="${q[1]}" x2="${p[0]}" y2="${p[1]}" stroke="${hot?C.cr:C.line}" stroke-width="${hot?2.4:1.6}"/>`});
+ L.forEach((lv,l)=>lv.forEach((p,i)=>{if(l===3&&i===7)return;s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${l===0?26:l===3?15:18}" fill="#fff" stroke="${l===0?C.cr:C.ink}" stroke-opacity="${l===0?1:.4}" stroke-width="1.6"/>`}));
+ s+=`<circle cx="400" cy="130" r="26" fill="none" stroke="${C.cr}" stroke-width="2" opacity="0"><animate attributeName="r" values="26;40" dur="1s" begin="indefinite" fill="freeze" data-d="1.4"/><animate attributeName="opacity" values="1;0" dur="1s" begin="indefinite" fill="freeze" data-d="1.4"/></circle>`;
+ s+=t(400,136,'lista',{a:'middle',c:'mn',f:C.cr,x:' font-size="11.5"'})+t(440,108,'guardada en Stellar',{c:'mn',f:C.mut,x:' font-size="11.5"'});
+ s+=`<g><g transform="translate(662,430)"><circle r="17" fill="url(#grad)"/>${iso(0,0,18,'#fff')}</g><animateTransform attributeName="transform" type="translate" values="0 -90;0 0" dur=".8s" begin="indefinite" fill="freeze" data-d=".3"/></g>`;
+ s+=sens(662,474,'nueva persona','María ✓',{a:'middle',c:'lbB',mf:C.mut,rf:C.cr});
+ s+=t(330,488,'lista de invitados verificados',{a:'middle',c:'mn',f:C.mut});
+ s+=R(40,515,330,62,{st:C.ink,dash:'5 5',sh:false})+t(60,542,'lista de bloqueo',{c:'lbB',x:' font-size="14.5"'})+t(60,562,'si una cuenta está acá, su dinero se congela',{x:' font-size="12.5"'});return s};
+
+S.intent=()=>{let s=R(50,90,320,420,{rx:20})+t(78,128,'CARGAR CON TARJETA',{c:'mnS',f:C.cr});
+ s+=t(78,172,'Monto',{x:' font-size="13"'})+R(78,182,264,48,{rx:10,sh:false})+t(96,213,'US$ 10',{c:'mn',x:' font-size="18"'});
+ [['firmado por María','✓',C.ok],['pedido','no se puede repetir',C.ink],['referencia','única',C.ink]].forEach(([k,v,c],i)=>{const y=270+i*40;s+=`<g opacity="0">${t(78,y,k,{x:' font-size="13.5"'})}${t(342,y,v,{a:'end',c:'mn',f:c})}<line x1="78" y1="${y+14}" x2="342" y2="${y+14}" stroke="${C.line}"/>${once('opacity',0,1,.3,.2+i*.25)}</g>`});
+ s+=`<rect x="78" y="420" width="264" height="46" rx="10" fill="${C.wine}"/>`+t(210,449,'Continuar',{a:'middle',c:'lbB',f:'#fff',x:' font-size="15"'});
+ s+=arrow(372,300,442,300)+dot('M372,300 L442,300',C.cr,1.2,0,4);
+ s+=shield(490,300,78,'Shield');
+ s+=arrow(533,300,640,300)+dot('M533,300 L640,300',C.ink,1.4,-.4,4);
+ s+=t(587,250,'pide el pago',{a:'middle',c:'mn',f:C.ink,x:' font-size="12"'})+t(587,268,'(para Shield)',{a:'middle',c:'mn',f:C.mut,x:' font-size="11"'});
+ s+=bank(690,300);
+ s+=t(590,410,'el dinero va a',{a:'middle'})+t(590,430,'la cuenta de Shield, no la de María',{a:'middle',c:'lbB',f:C.cr,x:' font-size="14.5"'});return s};
+
+S.omni=()=>{let s=bank(130,250)+arrow(170,250,400,250)+coin('M175,250 L395,250',2.2,0)+shield(450,250,80,'')+t(450,316,'cuenta de Shield',{a:'middle',c:'lbB'});
+ s+=`<g opacity="0">${R(560,212,210,76,{rx:38,fill:C.soft,st:C.cr})}${mag(598,250,26)}${t(622,245,'María:',{c:'lbB',f:C.wine,x:' font-size="14"'})}${t(622,266,'no aparece',{c:'mn',f:C.cr})}${once('opacity',0,1,.4,.6)}</g>`;
+ s+=R(130,380,540,150)+t(156,412,'LO QUE VE EL PÚBLICO',{c:'mnS'});
+ [['de','Casa de cambio'],['a','Shield'],['monto','US$ 10,00'],['referencia','7302…']].forEach(([k,v],i)=>s+=t(156,444+i*22,k,{x:' font-size="13"'})+t(250,444+i*22,v,{c:'mn',x:' font-size="12.5"'}));return s};
+
+S.transfer=()=>{let s=pool(400,240,190,'',10);
+ s+=`<g><circle cx="300" cy="250" r="42" fill="#fff" stroke="${C.ink}" stroke-width="1.6"/>${t(300,247,'saldo',{a:'middle',c:'mn'})}${t(300,266,'Shield',{a:'middle',c:'mn',f:C.mut})}</g>`;
+ s+=arrow(344,250,452,250,C.cr)+dot('M344,250 L452,250',C.cr,1.2,0,4);
+ s+=`<g><circle cx="500" cy="250" r="42" fill="#fff" stroke="${C.cr}" stroke-width="2"/>${t(500,247,'saldo',{a:'middle',c:'mn'})}</g>`+sens(500,266,'¿de quién?','María',{a:'middle',c:'mn'});
+ s+=`<g><rect x="345" y="140" width="110" height="44" rx="22" fill="url(#grad)" filter="url(#sh)"/>${t(400,168,'válido ✓',{a:'middle',c:'mn',f:'#fff',x:' font-size="13"'})}<animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2s" repeatCount="indefinite"/></g>`;
+ s+=t(400,345,'la red valida sin ver los números',{a:'middle',c:'mn',f:C.wine,x:' font-size="12"'});
+ s+=R(150,450,500,130)+t(176,480,'LO QUE VE EL PÚBLICO',{c:'mnS'});
+ s+=t(176,508,'firmada por',{x:' font-size="13"'})+t(624,508,'Shield',{c:'mn',a:'end'})+t(176,530,'entra dinero de afuera',{x:' font-size="13"'})+t(624,530,'no',{c:'mn',a:'end'});
+ s+=t(176,552,'monto',{x:' font-size="13"'})+sens(624,552,'oculto','US$ 10,00',{a:'end'})+t(176,572,'destino',{x:' font-size="13"'})+sens(624,572,'oculto','María',{a:'end'});return s};
+
+S.balance=()=>{let s=`<rect x="290" y="40" width="220" height="400" rx="34" fill="#fff" stroke="${C.ink}" stroke-width="2" filter="url(#sh)"/><rect x="365" y="54" width="70" height="8" rx="4" fill="${C.line}"/>`;
+ s+=iso(320,96,18,C.cr)+t(334,102,'Shield',{c:'lbB',x:' font-size="14"'});
+ s+=`<rect x="310" y="128" width="180" height="150" rx="18" fill="url(#grad)"/>`+t(330,160,'Saldo privado',{c:'lb',f:'#fff',x:' font-size="13"'})+sens(330,214,'•••••','10,00',{c:'big',mf:'#fff',rf:'#fff'})+t(330,244,'dólares digitales',{c:'mn',f:'#fff',x:' font-size="12"'})+icon('i-lock',466,154,16,'#fff');
+ s+=sens(400,312,'el público','el auditor',{a:'middle',c:'lbB',mf:C.ink,rf:C.cr})+sens(400,332,'no lo ve','sí lo ve',{a:'middle',c:'lbB',mf:C.ink,rf:C.cr});
+ s+=`<rect x="320" y="370" width="160" height="40" rx="10" fill="${C.sub}"/>`+t(400,395,'Enviar en privado',{a:'middle',c:'lb',f:C.ink,x:' font-size="13"'});
+ const ev=[['0 s','pedido'],['20 s','llega el pago'],['','a la caja'],['','a María'],['60 s','listo']];
+ s+=`<line x1="110" y1="510" x2="690" y2="510" stroke="${C.line}" stroke-width="4" stroke-linecap="round"/><line x1="110" y1="510" x2="110" y2="510" stroke="url(#grad)" stroke-width="4" stroke-linecap="round">${once('x2',110,690,2.4,.2)}</line>`;
+ ev.forEach(([a,b],i)=>{const x=110+i*145;s+=`<circle cx="${x}" cy="510" r="8" fill="#fff" stroke="${i===4?C.ok:C.cr}" stroke-width="3"/>`+t(x,486,a,{a:'middle',c:'mn',f:C.mut,x:' font-size="11.5"'})+t(x,540,b,{a:'middle',x:' font-size="12.5"'})});return s};
+
+function buildScenes(){document.getElementById('scenes').innerHTML=Object.keys(S).map(k=>`<g id="s-${k}" class="scene">${S[k]()}</g>`).join('')}
+buildScenes();
+
+// LENS
+const stage=document.getElementById('stage'),lensEl=document.getElementById('lens');
+function setLens(v){setTimeout(()=>typeof lensNote==='function'&&lensNote());stage.classList.toggle('aud',v==='aud');lensEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v))}
+lensEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{setLens(b.dataset.v);lensEl.classList.remove('pulse')});
+
+// HERO toggle
+const hp=document.getElementById('heroPay');let heroManual=false;
+function heroSet(v){hp.classList.toggle('aud',v==='aud');hp.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));heroNoteSet()}
+hp.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{heroManual=true;heroSet(b.dataset.v)});
+let hv='pub';const heroNoteSet=()=>document.getElementById('heroNote').textContent=hp.classList.contains('aud')?UI[L].heroAud:UI[L].heroPub;if(!matchMedia('(prefers-reduced-motion: reduce)').matches)setInterval(()=>{if(heroManual)return;hv=hv==='pub'?'aud':'pub';heroSet(hv)},3600);
+
+// SCROLL
+let steps=[];let cur=null;
+function restart(g){g.querySelectorAll('[begin="indefinite"]').forEach(a=>{try{a.endElement&&a.endElement();a.beginElementAt(parseFloat(a.dataset.d||0))}catch(e){}})}
+function show(name){if(name===cur)return;cur=name;document.querySelectorAll('.scene').forEach(g=>g.classList.toggle('on',g.id==='s-'+name));const g=document.getElementById('s-'+name);if(g)restart(g);lensNote()}
+function lensNote(){const g=document.getElementById('s-'+cur),n=document.getElementById('lensNote');const diff=g&&g.querySelector('.sens,.audOnly');n.classList.toggle('same',!diff);n.textContent=diff?UI[L].lensDiff:UI[L].lensSame}
+function activate(st){steps.forEach(s=>s.classList.toggle('on',s===st));show(st.dataset.scene);if(st.dataset.lensHint&&!lensEl.dataset.hinted){lensEl.dataset.hinted=1;lensEl.classList.add('pulse')}}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)activate(e.target)}),{rootMargin:'-48% 0px -48% 0px'});
+function renderSteps(){const el=document.getElementById('steps');el.innerHTML=STEPS[L].map((st,i)=>{const[tag,h,body,extra,c]=st;return `<div class="step" data-scene="${SCENES[i]}"${SCENES[i]==='transfer'?' data-lens-hint="1"':''}><div class="card"><div class="tag">${tag}</div><h3>${h}</h3>${body.map(p=>`<p>${p}</p>`).join('')}${extra?`<span class="try">${extra}</span>`:''}${c?`<details><summary>${UI[L].cur}</summary><p>${c}</p></details>`:''}</div></div>`}).join('');
+ io.disconnect();steps=[...el.querySelectorAll('.step')];steps.forEach(s=>io.observe(s))}
+renderSteps();show('leak');
+addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-innerHeight)*100)+'%'},{passive:true});
+
+// WHO SEES WHAT
+const OBS_ES=[{id:'pub',n:'El público',d:'cualquiera que mire el registro',ic:'i-eye'},{id:'anchor',n:'La casa de cambio',d:'cambia tu dinero por dólares digitales',ic:'i-bank'},{id:'shield',n:'Shield',d:'el intermediario',ic:'iso'},{id:'aud',n:'El auditor',d:'puede mirar, no puede tocar',ic:'i-key'},{id:'other',n:'Otro usuario',d:'alguien más en la caja fuerte',ic:'i-users'}];
+const SEE_ES={ramp:{
+ pub:[['Que la casa de cambio le envió dinero a Shield','Que Shield guardó dinero en la caja fuerte','Que Shield hizo movimientos privados'],['La cuenta de María','Quién recibió qué','Cuánto se movió en privado']],
+ anchor:[['Quién es María (le verificó la identidad)','Cuánto pagó'],['Qué pasa dentro de la caja fuerte','Adónde fue a parar el dinero']],
+ shield:[['Quién es quién dentro de la caja fuerte (lleva la lista de invitados)','Cada pedido de carga: quién, cuánto y cuándo'],['La llave de María para mover su dinero: queda en su dispositivo']],
+ aud:[['Cada saldo y cada movimiento de la caja fuerte: de quién y cuánto'],['Nada. Ese es el trato: la caja fuerte tiene controles']],
+ other:[['Nada sobre los demás'],['Saldos ajenos','Movimientos ajenos']]},
+ direct:{
+ pub:[['La cuenta de María cuando carga dinero, y cuánto','Que su cuenta hace movimientos privados','Sus retiros, y cuánto'],['Cuánto mueve en privado','A quién le manda dinero']],
+ anchor:[['Nada: en este caso no participa'],['Todo el recorrido']],
+ shield:[['Quién es quién dentro de la caja fuerte'],['La llave de María para mover su dinero']],
+ aud:[['Cada saldo y cada movimiento: de quién y cuánto'],['Nada']],
+ other:[['Nada sobre los demás'],['Saldos ajenos','Movimientos ajenos']]}};
+let mode='ramp',obs='pub';
+let OBS=OBS_ES,SEE=SEE_ES;
+function setWhoLang(){if(L==='es'){OBS=OBS_ES;SEE=SEE_ES}else{OBS=OBS_ES.map((o,i)=>({...o,n:OBS_T[L][i][0],d:OBS_T[L][i][1]}));SEE=SEE_T[L]}}
+setWhoLang();
+const op=document.getElementById('obsPills');
+function buildObs(){op.innerHTML=OBS.map(o=>`<button class="pill" data-o="${o.id}" aria-pressed="${o.id===obs}"><span class="obsIcon"><svg viewBox="${o.ic==='iso'?'0 0 272 394':'0 0 24 24'}"${o.ic==='iso'?' fill="currentColor"':''}><use href="#${o.ic}"/></svg></span><span style="text-align:left"><b style="font-weight:600;display:block">${o.n}</b><small style="font-family:Inter,system-ui,sans-serif;opacity:.75">${o.d}</small></span></button>`).join('');
+ op.querySelectorAll('.pill').forEach(b=>b.onclick=()=>{obs=b.dataset.o;renderWho()})}
+buildObs();
+function renderWho(){const o=OBS.find(x=>x.id===obs),[y,n]=SEE[mode][obs];
+ document.getElementById('whoTitle').textContent=o.n;
+ document.getElementById('whoSub').textContent=mode==='ramp'?UI[L].whoRamp:UI[L].whoDirect;
+ document.getElementById('seeYes').innerHTML=y.map((x,i)=>`<li style="animation-delay:${i*60}ms">${x}</li>`).join('');
+ document.getElementById('seeNo').innerHTML=n.map((x,i)=>`<li style="animation-delay:${i*60}ms">${x}</li>`).join('');
+ op.querySelectorAll('.pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===obs));
+ document.querySelectorAll('#modePills .pill').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===mode))}
+op.querySelectorAll('.pill').forEach(b=>b.onclick=()=>{obs=b.dataset.o;renderWho()});
+document.querySelectorAll('#modePills .pill').forEach(b=>b.onclick=()=>{mode=b.dataset.m;renderWho()});
+renderWho();
+
+
+function setLang(l,save){L=l;const u=UI[L];document.documentElement.lang=L;document.title=u.title;
+ document.querySelectorAll('[data-i]').forEach(e=>e.innerHTML=u[e.dataset.i]);
+ document.querySelectorAll('[data-a]').forEach(e=>e.setAttribute('aria-label',u[e.dataset.a]));
+ document.querySelectorAll('[data-app]').forEach(a=>a.href=BASE+APP[L]+a.dataset.app);
+ document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));
+ const prev=cur;buildScenes();renderSteps();cur=null;show(prev||'leak');
+ const on=steps.find(x=>x.dataset.scene===prev);if(on)on.classList.add('on');
+ setWhoLang();buildObs();renderWho();heroNoteSet();
+ if(save){try{localStorage.setItem('shield-lang',L)}catch(e){}}}
+document.querySelectorAll('#langs button').forEach(b=>b.onclick=()=>setLang(b.dataset.l,true));
+setLang(L);
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelectorAll('svg').forEach(s=>s.pauseAnimations&&s.pauseAnimations());
+</script>
+</body>
+</html>
